@@ -1,0 +1,80 @@
+﻿<Window x:Class="DotaParser.EditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DotaParser"
+        mc:Ignorable="d"
+        Title="Карточка героя" Height="680" Width="450">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="4*"/>
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+            <StackPanel>
+                <Label Content="{Binding DataGridItem.Name}" FontSize="30" FontWeight="Bold"/>
+                <Label Content="{Binding MainAttributeDB}" Foreground="DarkRed" FontSize="20" FontWeight="Bold"/>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.Column="0">
+            <StackPanel>
+                <StackPanel>
+                    <Label Content="Главный атрибут"/>
+                    <ComboBox ItemsSource="{Binding AttributesList}" SelectedItem="{Binding MainAttributeDB}">
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Имя"/>
+                    <TextBox Text="{Binding HeroDB.Name}"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Здоровье"/>
+                    <TextBox Text="{Binding HeroDB.Health}"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Мана"/>
+                    <TextBox Text="{Binding HeroDB.Mana}"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Броня"/>
+                    <TextBox Text="{Binding HeroDB.Armor}"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Сопротивление магии"/>
+                    <TextBox Text="{Binding HeroDB.MagicResistance}"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Урон"/>
+                    <TextBox Text="{Binding HeroDB.Damage}"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Скорость передвижения"/>
+                    <TextBox Text="{Binding HeroDB.MoveSpeed}"/>
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="Тип атаки"/>
+                    <ComboBox SelectedIndex="{Binding AttackType}">
+                        <ComboBoxItem Content="Ближний бой"/>
+                        <ComboBoxItem Content="Дальний бой"/>
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+        <Label Content="Roles" Grid.Column="2" Grid.Row="1" FontSize="20" FontWeight="Bold"/>
+        <ListBox Grid.Column="2" Grid.Row="1" ItemsSource="{Binding RolesDB}" SelectedItem="{Binding SelectedRoleDB}" Height="300" Margin="0,34,0,108"/>
+        <GroupBox Grid.Column="2" Grid.Row="1" Height="100" VerticalAlignment="Bottom">
+            <StackPanel>
+                <ComboBox ItemsSource="{Binding RolesList}" SelectedItem="{Binding SelectedRole}"/>
+                <Button Content="Добавить роль" Height="25" Command="{Binding AddHeroRole}"/>
+                <Label/>
+                <Button Content="Удалить роль" Height="25" Command="{Binding DeleteHeroRole}"/>
+            </StackPanel>
+        </GroupBox>
+        <Button Content="Применить изменения" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="1" Height="50" Command="{Binding EditHero}" Margin="0,456,0,0"/>
+    </Grid>
+</Window>
