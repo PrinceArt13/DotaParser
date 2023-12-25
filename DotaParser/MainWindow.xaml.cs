@@ -20,6 +20,7 @@ namespace DotaParser
     /// </summary>
     public partial class MainWindow : Window
     {
+        ReportGenerator reportGenerator = new();
         public MainWindow()
         {
             InitializeComponent();
@@ -39,6 +40,11 @@ namespace DotaParser
             EditWindow editWindow = new EditWindow();
             editWindow.DataContext = this.DataContext;
             editWindow.Show();
+        }
+
+        private void GenerateReport_Click(object sender, RoutedEventArgs e)
+        {
+            reportGenerator.GenerateReport();
         }
     }
 }
