@@ -15,7 +15,13 @@ namespace DotaParser
 {
     public class Parser
     {
-        public static async Task Parse(string url)
+        private static Parser? instance;
+        public static Parser GetInstance()
+        {
+            instance ??= new Parser();
+            return instance;
+        }
+        public async Task Parse(string url)
         {
             // Создаём контекст, который будет собирать код сайта
             var context = BrowsingContext.New(Configuration.Default.WithDefaultLoader());
@@ -50,7 +56,7 @@ namespace DotaParser
             Role? GameRole;
             using (dbContext db = new dbContext())
             {
-                var rolesInDB = db.Roles.ToList();//.Where(x => x.Name == role).FirstOrDefault();
+                var rolesInDB = db.Roles.ToList();
                 foreach (string role in listRoles)
                 {
                     GameRole = rolesInDB.Where(x => x.Name == role).FirstOrDefault();

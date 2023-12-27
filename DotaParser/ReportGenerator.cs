@@ -10,13 +10,20 @@ using DotaParser.Models.Entities;
 using DotaParser.Models;
 using Microsoft.Office.Interop.Excel;
 using DotaParser.Models.ViewModels;
+using System.Windows;
 
 namespace DotaParser
 {
     class ReportGenerator
     {
+        private static ReportGenerator? instance;
+        public static ReportGenerator GetInstance()
+        {
+            instance ??= new ReportGenerator();
+            return instance;
+        }
 
-        public void GenerateReport()
+        public void GenerateReport(object ShablonFile, object SaveAsFile)
         {
             //открываем excel
             Excel.Application excelApp = new Excel.Application();
@@ -25,6 +32,11 @@ namespace DotaParser
 
             //массивы параметров героев
             Hero[] heroes = GetHeroes();
+            if (heroes == null)
+            {
+                MessageBox.Show("Сначала заполните БД!");
+                return;
+            }
             string[] heroesNames = heroes.Select(x => x.Name).ToArray();
             int[] heroesHealth = heroes.Select(x => x.Health).ToArray();
             int[] heroesMana = heroes.Select(x => x.Health).ToArray();
@@ -37,18 +49,16 @@ namespace DotaParser
             CreateChart(worksheet, heroesNames, heroesMana, "Мана", Excel.XlChartType.xlLineMarkers);
             CreateChart(worksheet, heroesNames, heroesDamage, "Урон", Excel.XlChartType.xlBarClustered);
             CreateChart(worksheet, heroesNames, heroesMoveSpeed, "Скорость передвижения", Excel.XlChartType.xlLineMarkers);
-            string excelFilePath = @"C:\Users\artem\Desktop\Архитектура ИС\shablox.xlsx";
+            string excelFilePath = @"graphics.xlsx";
             workbook.SaveAs2(excelFilePath);
             workbook.Close();
             excelApp.Quit();
 
             //открываем word
             Word.Application wordApp = new();
-            //wordApp.Visible = true; //Отобразить окно так называемого приложения
 
-            object file = @"C:\Users\artem\Desktop\Архитектура ИС\privetVsem.doc";
             // Открываем документ
-            Word.Document wDoc = wordApp.Documents.Add(ref file, false, Word.WdNewDocumentType.wdNewBlankDocument, true);
+            Word.Document wDoc = wordApp.Documents.Add(ref ShablonFile, false, Word.WdNewDocumentType.wdNewBlankDocument, true);
 
             
             Excel.Workbook excelbook = excelApp.Workbooks.Open(excelFilePath);
@@ -63,7 +73,7 @@ namespace DotaParser
             }
             try
             {
-                wDoc.SaveAs2(@"C:\Users\artem\Desktop\Архитектура ИС\8И11 Принцев АИС Разработка БД и механизмов наполненияdocx.docx");
+                wDoc.SaveAs2(SaveAsFile);
             }
             catch (Exception ex)
             {
@@ -79,7 +89,7 @@ namespace DotaParser
             using (var db = new dbContext())
             {
                 Hero[] heroes = db.Heroes.OrderBy(x => x.Name).ToArray();
-                foreach (Hero? hero in heroes)
+                foreach (Hero hero in heroes)
                 {
                     heroes.Append(hero);
                 }

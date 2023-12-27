@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -26,12 +27,31 @@ namespace DotaParser
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
+
         public ViewModel()
         {
             heroList = new();
             DataGridItem = new();
             IsEnableHeroDetails = false;
             IsEnableDeleteHero = false;
+            IsEnableParsing = true;
+            ProgressBarVisibility = "Hidden";
+            ShablonPath = @"C:\Users\artem\Desktop\Архитектура ИС\privetVsem.doc";
+            SaveAsPath = @"C:\Users\artem\Desktop\Архитектура ИС\8И11 Принцев АИС Разработка БД и механизмов наполненияdocx.docx";
+        }
+
+        private string progressBarVisibility;
+        public string ProgressBarVisibility
+        {
+            get
+            {
+                return progressBarVisibility;
+            }
+            set
+            {
+                progressBarVisibility = value;
+                OnPropertyChanged();
+            }
         }
 
         private List<HeroVM> heroList;
@@ -71,7 +91,6 @@ namespace DotaParser
                             Damage = x.Damage,
                             MoveSpeed = x.MoveSpeed
                         }).ToList();
-                        //IsEnableHeroDetails = true;
                     }
                 });
             }
@@ -260,6 +279,10 @@ namespace DotaParser
                 {
                     using (var db = new dbContext())
                     {
+                        EditWindow editWindow = new EditWindow();
+                        editWindow.DataContext = this;
+                        editWindow.Show();
+
                         HeroDB = db.Heroes.OrderBy(x => x.Name).Where(x => x.Name == DataGridItem.Name).FirstOrDefault();
                         HeroDB.Attribute = db.MainAttributes.Where(x => x.AttributeId == HeroDB.AttributeId).FirstOrDefault();
                         HeroDB.AttackType = attackType;
@@ -414,6 +437,116 @@ namespace DotaParser
                         db.Roles.RemoveRange(AllRoles);
                         db.MainAttributes.RemoveRange(AllAttributes);
                         db.SaveChanges();
+                        MessageBox.Show("База Данных очищена!");
+                    }
+                });
+            }
+        }
+
+        private bool isEnableParsing;
+        public bool IsEnableParsing
+        {
+            get
+            {
+                return isEnableParsing;
+            }
+            set
+            {
+                isEnableParsing = value; OnPropertyChanged();
+            }
+        }
+
+        private Command startParsing;
+        public Command StartParsing
+        {
+            get
+            {
+                return startParsing ??= new Command(async obj =>
+                {
+                    ProgressBarVisibility = "Visible";
+                    IsEnableParsing = false;
+                    await Parsing();
+                    IsEnableParsing = true;
+                    ProgressBarVisibility = "Hidden";
+                });
+            }
+        }
+        static async Task Parsing()
+        {
+            await Parser.GetInstance().Parse(@"https://dota2.fandom.com/wiki/Dota_2_Wiki");
+        }
+        private Command generateReport;
+        public Command GenerateReport
+        {
+            get
+            {
+                return generateReport ??= new Command(obj =>
+                {
+                    ReportGenerator.GetInstance().GenerateReport(ShablonPath, SaveAsPath);
+                });
+            }
+        }
+
+        private string shablonPath;
+        public string ShablonPath
+        {
+            get
+            {
+                return shablonPath;
+            }
+            set
+            {
+                shablonPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string saveAsPath;
+        public string SaveAsPath
+        {
+            get
+            {
+                return saveAsPath;
+            }
+            set
+            {
+                saveAsPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        infoWindow info;
+
+        private Command infoWindow;
+
+        public Command InfoWindow
+        {
+            get
+            {
+                return infoWindow ??= new Command(obj =>
+                {
+                    info = new();
+                    info.DataContext = this;
+                    info.Show();
+                });
+            }
+        }
+        private Command applyPath;
+        public Command ApplyPath
+        {
+            get
+            {
+                return applyPath ??= new Command(obj =>
+                {
+                    if (File.Exists(ShablonPath) && File.Exists(SaveAsPath)
+                        && (Path.GetExtension(ShablonPath) == ".docx" || Path.GetExtension(ShablonPath) == ".doc")
+                        && (Path.GetExtension(SaveAsPath) == ".docx" || Path.GetExtension(SaveAsPath) == ".doc"))
+                    {
+                        info.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Пути введены неверно! (Требуемый формат: doc или docx!)");
                     }
                 });
             }

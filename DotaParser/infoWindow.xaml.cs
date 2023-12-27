@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace DotaParser
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Логика взаимодействия для infoWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class infoWindow : Window
     {
-        public MainWindow()
+        public infoWindow()
         {
             InitializeComponent();
         }

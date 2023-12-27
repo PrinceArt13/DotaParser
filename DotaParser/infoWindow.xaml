@@ -1,0 +1,18 @@
+﻿<Window x:Class="DotaParser.infoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DotaParser"
+        mc:Ignorable="d"
+        Title="Пути для генерации отчёта" Height="200" Width="400" WindowStyle="None" ResizeMode="NoResize">
+    <Grid>
+        <StackPanel>
+            <Label Content="Word шаблон (Путь)"/>
+            <TextBox Height="20" Width="350" Text="{Binding ShablonPath}"/>
+            <Label Content="Сгенерированный отчёт (Путь)"/>
+            <TextBox Height="20" Width="350" Text="{Binding SaveAsPath}"/>
+            <Button Content="Применить" Height="50" Width="150" Margin="0,30,0,0" Command="{Binding ApplyPath}"/>
+        </StackPanel>
+    </Grid>
+</Window>
